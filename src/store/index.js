@@ -64,7 +64,15 @@ export default createStore({
       if (state.questionIndex < state.questions.length - 1) {
         // eslint-disable-next-line no-plusplus
         state.questionIndex++;
+      } else {
+        state.uiState = state.score > 0 ? "won" : "lost";
       }
+    },
+    restartGame(state) {
+      state.score = 0;
+      state.questionIndex = 0;
+      state.character = "";
+      state.uiState = "start";
     },
   },
 });

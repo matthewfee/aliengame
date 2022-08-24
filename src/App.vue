@@ -11,7 +11,9 @@
       <button @click="pickCharacter">Pick Your Character</button>
     </GamestateStart>
 
-    <section v-else>
+    <GamestateFinish v-if="(uiState === 'won') | (uiState === 'lost')"></GamestateFinish>
+
+    <section v-if="uiState === 'characterChosen'">
       <svg viewBox="0 -180 1628 1180" class="main">
         <defs>
           <clipPath id="bottom-clip">
@@ -23,7 +25,7 @@
         </defs>
 
         <Friend></Friend>
-        <Score></Score>
+        <ScoreDisplay></ScoreDisplay>
 
         <component :is="character"></component>
         <text
@@ -69,7 +71,7 @@
       </div>
 
       <div class="zombietalk">
-        <p v-for="character in characterChoices" :key="character">
+        <p v-for="character in shuffle(characterChoices)" :key="character">
           <button @click="pickQuestion(character)">
             {{ questions[questionIndex][character] }}
           </button>
@@ -84,12 +86,13 @@ import Artist from "@/components/Artist.vue";
 import Baker from "@/components/Baker.vue";
 import Friend from "@/components/Friend.vue";
 import Mechanic from "@/components/Mechanic.vue";
-import Score from "@/components/Score.vue";
+import ScoreDisplay from "@/components/ScoreDisplay.vue";
 import Zombie from "@/components/Zombie.vue";
 
 import { mapState } from "vuex";
 
 import GamestateStart from "./components/GamestateStart.vue";
+import GamestateFinish from "./components/GamestateFinish.vue";
 
 export default {
   components: {
@@ -98,8 +101,9 @@ export default {
     Baker,
     Friend,
     Mechanic,
-    Score,
+    ScoreDisplay,
     Zombie,
+    GamestateFinish,
   },
   data() {
     return {
@@ -124,6 +128,15 @@ export default {
     },
     pickQuestion(character) {
       this.$store.commit("pickQuestion", character);
+    },
+    shuffle(array) {
+      // eslint-disable-next-line no-plusplus
+      for (let i = array.length - 1; i >= 0; i--) {
+        const randomIndex = Math.floor(Math.random() * (i + 1));
+        array.push(array[randomIndex]);
+        array.splice(randomIndex, 1);
+      }
+      return array;
     },
   },
 };
